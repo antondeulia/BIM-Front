@@ -46,6 +46,23 @@ export default function ChatBotCard({
           <span className="chatbot-model-label">Model</span>
           <span className="chatbot-model-value">{chatbot.model}</span>
         </div>
+        {chatbot.datasets && chatbot.datasets.length > 0 && (
+          <div className="chatbot-datasets-list">
+            <span className="chatbot-datasets-label">Datasets:</span>
+            <div className="chatbot-datasets-tags">
+              {chatbot.datasets.slice(0, 3).map((dataset) => (
+                <span key={dataset.id} className="chatbot-dataset-tag">
+                  {dataset.title}
+                </span>
+              ))}
+              {chatbot.datasets.length > 3 && (
+                <span className="chatbot-dataset-tag chatbot-dataset-tag-more">
+                  +{chatbot.datasets.length - 3}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="chatbot-card-actions">

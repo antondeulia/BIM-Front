@@ -15,6 +15,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [wasAuthenticated, setWasAuthenticated] = useState<boolean | null>(
     null
   );
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  useEffect(() => {
+    if (prevPathname !== pathname) {
+      setIsNavigating(true);
+      const timer = setTimeout(() => {
+        setIsNavigating(false);
+      }, 300);
+      setPrevPathname(pathname);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, prevPathname]);
 
   useEffect(() => {
     if (!loading) {
@@ -69,6 +82,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="app-container">
+      {isNavigating && <div className="navigation-loader" />}
       <Sidebar />
       <main className="main-content">
         {!isChatPage && (

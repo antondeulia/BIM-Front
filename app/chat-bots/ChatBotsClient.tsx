@@ -21,6 +21,8 @@ interface Assistant {
   provider: string;
   model: string;
   temperature: number;
+  datasetIds?: number[];
+  datasets?: Array<{ id: number; title: string }>;
 }
 
 interface CreateAssistantDto {
