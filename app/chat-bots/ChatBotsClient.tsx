@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import ChatBotCard from '@/components/ChatBotCard';
-import Modal from '@/components/Modal';
-import ChatBotSettingsForm from '@/components/forms/ChatBotSettingsForm';
-import ChatBotDatasetsForm from '@/components/forms/ChatBotDatasetsForm';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { useToast } from '@/contexts/ToastContext';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import ChatBotCard from "@/components/ChatBotCard";
+import Modal from "@/components/Modal";
+import ChatBotSettingsForm from "@/components/forms/ChatBotSettingsForm";
+import ChatBotDatasetsForm from "@/components/forms/ChatBotDatasetsForm";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useToast } from "@/contexts/ToastContext";
 import {
   createAssistant,
   updateAssistant,
   updateAssistantDatasets,
   getAssistantDatasetsForClient,
   getDatasetsForClient,
-} from '@/lib/server/actions';
+} from "@/lib/server/actions";
 
 interface Assistant {
   id: number;
@@ -38,14 +38,12 @@ interface ChatBotsClientProps {
   initialAssistants: Assistant[];
 }
 
-export function ChatBotsClient({
-  initialAssistants,
-}: ChatBotsClientProps) {
+export function ChatBotsClient({ initialAssistants }: ChatBotsClientProps) {
   const router = useRouter();
   const { success, error } = useToast();
 
   const [assistants, setAssistants] = useState<Assistant[]>(initialAssistants);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isNavigating, setIsNavigating] = useState<number | null>(null);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -67,15 +65,15 @@ export function ChatBotsClient({
       const result = await createAssistant(data);
 
       if (result.success && result.data) {
-        success('Assistant created successfully!');
+        success("Assistant created successfully!");
         setCreateModalOpen(false);
         router.refresh();
         setAssistants((prev) => [...prev, result.data]);
       } else {
-        error(result.error || 'Failed to create assistant');
+        error(result.error || "Failed to create assistant");
       }
     } catch (err) {
-      error(err instanceof Error ? err.message : 'Failed to create assistant');
+      error(err instanceof Error ? err.message : "Failed to create assistant");
     } finally {
       setIsSubmitting(false);
     }
@@ -93,7 +91,7 @@ export function ChatBotsClient({
       const result = await updateAssistant(selectedChatbot.id, data);
 
       if (result.success && result.data) {
-        success('Settings updated successfully!');
+        success("Settings updated successfully!");
         router.refresh();
         setSettingsModalOpen(false);
         setSelectedChatbot(null);
@@ -101,10 +99,10 @@ export function ChatBotsClient({
           prev.map((cb) => (cb.id === selectedChatbot.id ? result.data : cb))
         );
       } else {
-        error(result.error || 'Failed to update settings');
+        error(result.error || "Failed to update settings");
       }
     } catch (err) {
-      error(err instanceof Error ? err.message : 'Failed to update settings');
+      error(err instanceof Error ? err.message : "Failed to update settings");
     } finally {
       setIsSubmitting(false);
     }
@@ -120,8 +118,8 @@ export function ChatBotsClient({
       );
 
       if (result.success) {
-        success('Datasets updated successfully!');
-        
+        success("Datasets updated successfully!");
+
         const [datasetsResult, assistantDatasetsResult] = await Promise.all([
           getDatasetsForClient(),
           getAssistantDatasetsForClient(selectedChatbot.id),
@@ -131,6 +129,7 @@ export function ChatBotsClient({
           const allDatasets = datasetsResult.data || [];
           const updatedDatasetIds = assistantDatasetsResult.data || [];
           const updatedDatasets = allDatasets.filter((ds: any) =>
+            // @ts-ignore
             updatedDatasetIds.includes(ds.id)
           );
 
@@ -151,10 +150,10 @@ export function ChatBotsClient({
         setSelectedChatbot(null);
         router.refresh();
       } else {
-        error(result.error || 'Failed to update datasets');
+        error(result.error || "Failed to update datasets");
       }
     } catch (err) {
-      error(err instanceof Error ? err.message : 'Failed to update datasets');
+      error(err instanceof Error ? err.message : "Failed to update datasets");
     } finally {
       setIsSubmitting(false);
     }
@@ -235,7 +234,7 @@ export function ChatBotsClient({
           {searchQuery && (
             <button
               className="search-clear"
-              onClick={() => setSearchQuery('')}
+              onClick={() => setSearchQuery("")}
               aria-label="Clear search"
             >
               <svg
@@ -301,7 +300,7 @@ export function ChatBotsClient({
             setSelectedChatbot(null);
           }
         }}
-        title={`Settings – ${selectedChatbot?.name ?? ''}`}
+        title={`Settings – ${selectedChatbot?.name ?? ""}`}
       >
         {isSubmitting ? (
           <div className="form-loading">
@@ -328,7 +327,7 @@ export function ChatBotsClient({
             setSelectedChatbot(null);
           }
         }}
-        title={`Datasets – ${selectedChatbot?.name ?? ''}`}
+        title={`Datasets – ${selectedChatbot?.name ?? ""}`}
       >
         {isSubmitting ? (
           <div className="form-loading">
@@ -349,4 +348,3 @@ export function ChatBotsClient({
     </div>
   );
 }
-
