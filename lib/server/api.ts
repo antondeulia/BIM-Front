@@ -1,19 +1,9 @@
-import { cookies } from "next/headers";
-
-const API_BASE_URL =
-  process.env.API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8000";
+const API_BASE_URL = process.env.API_BASE_URL;
 
 export interface ApiError {
   detail?: string;
   message?: string;
   [key: string]: any;
-}
-
-interface ApiResponse<T> {
-  data?: T;
-  error?: ApiError;
 }
 
 export function getAuthTokenFromRequest(request: Request | any): string | null {
