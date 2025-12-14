@@ -12,6 +12,8 @@ import {
   createAssistant,
   updateAssistant,
   updateAssistantDatasets,
+  getAssistantDatasetsForClient,
+  getDatasetsForClient,
 } from '@/lib/server/actions';
 
 interface Assistant {
@@ -119,6 +121,32 @@ export function ChatBotsClient({
 
       if (result.success) {
         success('Datasets updated successfully!');
+        
+        const [datasetsResult, assistantDatasetsResult] = await Promise.all([
+          getDatasetsForClient(),
+          getAssistantDatasetsForClient(selectedChatbot.id),
+        ]);
+
+        if (datasetsResult.success && assistantDatasetsResult.success) {
+          const allDatasets = datasetsResult.data || [];
+          const updatedDatasetIds = assistantDatasetsResult.data || [];
+          const updatedDatasets = allDatasets.filter((ds: any) =>
+            updatedDatasetIds.includes(ds.id)
+          );
+
+          setAssistants((prev) =>
+            prev.map((assistant) =>
+              assistant.id === selectedChatbot.id
+                ? {
+                    ...assistant,
+                    datasetIds: updatedDatasetIds,
+                    datasets: updatedDatasets,
+                  }
+                : assistant
+            )
+          );
+        }
+
         setDatasetsModalOpen(false);
         setSelectedChatbot(null);
         router.refresh();
